@@ -1,8 +1,14 @@
 {
-  "dependencies": {
-    "dotenv": "^16.5.0",
-    "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "mongoose": "^8.15.2"
+  "name": "chillcamp",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "server": "nodemon server/app.js",
+    "client": "npm --prefix client run dev",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm --prefix client run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
   }
 }
