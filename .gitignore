@@ -1,2 +1,21 @@
+# Ignore all node_modules folders
+node_modules/
+
+# Ignore logs
+*.log
+npm-debug.log*
+
+# Ignore macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Ignore metadata and cache files
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Ignore env files
 .env
-/node_modules
+.env.local
