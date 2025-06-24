@@ -1,29 +1,33 @@
+//server/app.js
 const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
+const paath = require('path')
+const cors = require('cors')
 
 require('dotenv').config();
-const path = require('path');
-
 const connectDB = require('./config/db');
-const Campground = require('./models/campground')
-const { title } = require('process');
+
 connectDB()
 
-app.set('view engine','ejs')
-app.set('views',path.join(__dirname,'views'))
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+
+//Routes
+app.use('/api/campgrounds',require('./routes/campgrounds'))
+
+
+// const Campground = require('./models/campground')
+// const { title } = require('process');
+
+
 
 app.get('/',(req,res)=>{
-    res.render('home')
-})
-
-app.get('/makecampground', async(req,res)=>{
-    const camp = new Campground({title: 'My Backyard', price:'2500'})
-    await camp.save();
-    res.send(camp);
+    res.json({message:'ChillCamp API is running!!!'}) 
 })
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT,()=>{
-    console.log('server is live at port 3000')
+    console.log(`server is live at port ${PORT}`)
 })
