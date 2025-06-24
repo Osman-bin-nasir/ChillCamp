@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Row, Col, Card, Button, Alert, Spinner } from 'react-bootstrap';
 import { campgroundsAPI } from '../services/api';
+import { Link, useLocation} from 'react-router-dom';
 
 function Campgrounds() {
     const [campgrounds, setCampgrounds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const location = useLocation();
 
     useEffect(() => {
         const fetchCampgrounds = async () => {
@@ -22,7 +24,7 @@ function Campgrounds() {
         };
 
         fetchCampgrounds();
-    }, []);
+    }, [location.pathname]);
 
     if (loading) {
         return (
@@ -51,7 +53,7 @@ function Campgrounds() {
                                     <strong>Location:</strong> {campground.location}<br />
                                     <strong>Price:</strong> ${campground.price}/night
                                 </Card.Text>
-                                <Button variant="primary">View Details</Button>
+                                <Button as={Link} to={`/campgrounds/${campground._id}`} variant="primary">View Details</Button>
                             </Card.Body>
                         </Card>
                     </Col>

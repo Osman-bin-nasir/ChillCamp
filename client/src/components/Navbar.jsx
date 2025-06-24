@@ -11,6 +11,7 @@ function Navbar(){
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="/campgrounds">Campgrounds</Nav.Link>
+                    <Nav.Link as={Link} to="/campgrounds/new">Add New Camp</Nav.Link>
                 </Nav>
             </BSNavbar.Collapse>
         </Container>
