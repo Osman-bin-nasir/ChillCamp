@@ -1,21 +1,23 @@
-// CampgroundDetails.jsx
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Card, Button, Alert, Spinner } from 'react-bootstrap';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Card, Button, Alert, Spinner, Modal } from 'react-bootstrap';
 import { campgroundsAPI } from '../services/api';
 import { Link } from 'react-router-dom';
 
 function CampgroundDetails() {
-    const { id } = useParams(); // Get the campground ID from the URL
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [campground, setCampground] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         const fetchCampground = async () => {
             try {
                 setLoading(true);
-                const response = await campgroundsAPI.getById(id); // Assume you have a getById method
+                const response = await campgroundsAPI.getById(id);
                 setCampground(response.data);
             } catch (err) {
                 setError('Failed to fetch campground details');
@@ -27,6 +29,20 @@ function CampgroundDetails() {
 
         fetchCampground();
     }, [id]);
+
+    const handleDelete = async () => {
+        try {
+            setDeleting(true);
+            await campgroundsAPI.delete(id);
+            navigate('/campgrounds');
+        } catch (err) {
+            console.error('Error deleting campground:', err);
+            setError('Failed to delete campground');
+        } finally {
+            setDeleting(false);
+            setShowDeleteModal(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -64,11 +80,44 @@ function CampgroundDetails() {
                         <strong>Price:</strong> ${campground.price}/night<br />
                         <strong>Description:</strong> {campground.description || 'No description available'}
                     </Card.Text>
-                    <Button as={Link} to="/campgrounds" variant="secondary">
-                        Back to Campgrounds
-                    </Button>
+                    <div className="d-flex gap-2">
+                        <Button as={Link} to="/campgrounds" variant="secondary">
+                            Back to Campgrounds
+                        </Button>
+                        <Button as={Link} to={`/campgrounds/${id}/edit`} variant="warning">
+                            Edit
+                        </Button>
+                        <Button 
+                            variant="danger" 
+                            onClick={() => setShowDeleteModal(true)}
+                        >
+                            Delete
+                        </Button>
+                    </div>
                 </Card.Body>
             </Card>
+
+            {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete "{campground.title}"? This action cannot be undone.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button 
+                        variant="danger" 
+                        onClick={handleDelete}
+                        disabled={deleting}
+                    >
+                        {deleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 }
