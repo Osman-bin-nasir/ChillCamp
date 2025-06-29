@@ -17,6 +17,11 @@ const CampgroundSchema = new Schema({
     location: {
         type: String,
         required: true
+    },
+    //creates a relation between campground.js and user.js 
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 }, {
     timestamps: true  // This will add createdAt and updatedAt fields

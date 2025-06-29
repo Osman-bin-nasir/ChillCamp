@@ -1,12 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { AuthProvider } from './contexts/AuthContext';
 import Home from "./components/Home"
 import Navbar from "./components/Navbar"
 import Campgrounds from "./pages/Campground"
 import CampgroundDetails from './pages/CompgroundDetails';
 import CampgroundNew from './pages/CampgroundNew'
 import CampgroundEdit from './pages/CampgroundEdit';
+import Login from './pages/Login';
+import Register from './pages/Register'
 import Footer from './components/Footer';
+
 
 function App() {
 
@@ -23,6 +27,9 @@ function App() {
             <Route path="/campgrounds/new"      element={<CampgroundNew />} />
             <Route path="/campgrounds/:id"      element={<CampgroundDetails />} />
             <Route path="/campgrounds/:id/edit" element={<CampgroundEdit />} />
+            <Route path="/login"                element={<Login />} />
+            <Route path="/register"             element={<Register />} />
+
           </Routes>
         </div>
         <Footer/>
