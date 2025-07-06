@@ -1,7 +1,7 @@
 //server/routes/campgrounds.js
 const express = require('express')
 const router = express.Router()
-const Campground = require('../models//campground')
+const Campground = require('../models/campground')
 const { isLoggedIn, isAuthor } = require('../middleware/auth')
 
 //this gets all the campgrounds 
@@ -30,7 +30,7 @@ router.get('/:id', async(req,res)=>{
 })
 
 // CREATE new campground (protected)
-router.post('/', async(req, res) => {
+router.post('/', isLoggedIn, async(req, res) => {
     try {
         console.log('Received data:', req.body); // For debugging
         const campground = new Campground(req.body);

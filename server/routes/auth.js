@@ -6,7 +6,7 @@ const User = require('../models/user')
 //register route 
 router.post('/register', async (req, res) => {
     try {
-        const { email, username, passport } = req.body;
+        const { email, username, password } = req.body; // Fixed: was 'passport' instead of 'password'
         const user = new User({ email, username })
         const registeredUser = await User.register(user, password)
 
@@ -15,7 +15,7 @@ router.post('/register', async (req, res) => {
             if (err) return next(err)
             res.json({
                 message: 'Successfully registered! ',
-                user: { id: user._id, username: user.username, email: user.email }
+                user: { id: registeredUser._id, username: registeredUser.username, email: registeredUser.email }
             })
         })
     }
@@ -40,7 +40,7 @@ router.post('/login', async (req, res, next) => {
     })(req,res,next);
 })
 
-//logot route
+//logout route
 router.post('/logout',(req,res)=>{
     req.logout((err)=>{
         if(err) return next(err);
