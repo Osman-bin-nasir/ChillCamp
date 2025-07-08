@@ -5,6 +5,7 @@ const passport = require('./config/passport');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
 const cors = require('cors');
 require('dotenv').config(); // ✅ load .env
 
@@ -41,7 +42,7 @@ app.use(passport.session());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/campgrounds', campgroundRoutes);
-
+app.use('/api/campgrounds', reviewRoutes);
 // Root
 app.get('/', (req, res) => {
   res.json({ message: 'ChillCamp API is running!!!' });

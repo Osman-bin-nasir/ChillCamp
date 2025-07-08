@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext'
 function CampgroundDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const {currentUser} = useAuth();
+    const { currentUser } = useAuth();
     const [campground, setCampground] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -47,7 +47,7 @@ function CampgroundDetails() {
     };
 
     const isAuthor = currentUser && campground && campground.author &&
-    currentUser.id === campground.author._id;
+        currentUser.id === campground.author._id;
 
 
     if (loading) {
@@ -87,7 +87,7 @@ function CampgroundDetails() {
                         <strong>Description:</strong> {campground.description || 'No description available'}
                     </Card.Text>
                     <div className="d-flex gap-2">
-                        <Button as={Link} to="/campgrounds" variant="secondary">
+                        <Button as={Link} to="/campgrounds" variant="info">
                             Back to Campgrounds
                         </Button>
                         {isAuthor && (
@@ -106,6 +106,27 @@ function CampgroundDetails() {
                     </div>
                 </Card.Body>
             </Card>
+            <form action="" className="mt-4">
+                <h5>Leave a review</h5>
+                <div className='mb-3'>
+                    <label htmlFor="customRange1" className="form-label">Rating</label>
+                    <div className="w-25">
+                        <input type="range" min={1} max={5} className="form-range" id="customRange1" />
+                    </div>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="body" className="form-label">Review</label>
+                    <textarea
+                        name="review[body]"
+                        id="body"
+                        cols="30"
+                        rows="5"
+                        className="form-control"
+                        placeholder="Write your review here..."
+                    />
+                </div>
+                <button type="submit" className="btn btn-success">Submit</button>
+            </form>
 
             {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
