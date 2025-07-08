@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Card, Button, Alert, Spinner, Modal } from 'react-bootstrap';
 import { campgroundsAPI } from '../services/api';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'
 
 function CampgroundDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const {currentUser} = useAuth();
     const [campground, setCampground] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -43,6 +45,10 @@ function CampgroundDetails() {
             setShowDeleteModal(false);
         }
     };
+
+    const isAuthor = currentUser && campground && campground.author &&
+    currentUser.id === campground.author._id;
+
 
     if (loading) {
         return (
@@ -84,15 +90,19 @@ function CampgroundDetails() {
                         <Button as={Link} to="/campgrounds" variant="secondary">
                             Back to Campgrounds
                         </Button>
-                        <Button as={Link} to={`/campgrounds/${id}/edit`} variant="warning">
-                            Edit
-                        </Button>
-                        <Button 
-                            variant="danger" 
-                            onClick={() => setShowDeleteModal(true)}
-                        >
-                            Delete
-                        </Button>
+                        {isAuthor && (
+                            <>
+                                <Button as={Link} to={`/campgrounds/${id}/edit`} variant="warning">
+                                    Edit
+                                </Button>
+                                <Button
+                                    variant="danger"
+                                    onClick={() => setShowDeleteModal(true)}
+                                >
+                                    Delete
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </Card.Body>
             </Card>
@@ -109,8 +119,8 @@ function CampgroundDetails() {
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
                         Cancel
                     </Button>
-                    <Button 
-                        variant="danger" 
+                    <Button
+                        variant="danger"
                         onClick={handleDelete}
                         disabled={deleting}
                     >

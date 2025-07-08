@@ -11,8 +11,6 @@ const UserSchema = new Schema({
 })
 
 //this plugin adds username password and methods 
-UserSchema.plugin(passportLocalMongoose, { 
-    usernameField: 'email'
-})
+UserSchema.plugin(passportLocalMongoose)
 
 module.exports = mongoose.model('User',UserSchema);

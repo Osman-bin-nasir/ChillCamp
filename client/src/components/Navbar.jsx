@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 function Navbar() {
     const { currentUser, logout } = useAuth();
     const navigate = useNavigate();
+    console.log("Navbar currentUser:", currentUser);
 
     const handleLogout = async () => {
         try {
@@ -37,12 +38,11 @@ function Navbar() {
                             </Nav.Link>
                         )}
                     </Nav>
-
-                    <Nav className="ms-auto align-items-center gap-2">
+                    <Nav className="ms-auto gap-2">
                         {currentUser ? (
                             <>
                                 <span className="navbar-text text-light me-2">
-                                    Hello, <strong>{currentUser.username}</strong>
+                                    Hi <strong>{currentUser.username}!</strong>
                                 </span>
                                 <Button
                                     variant="outline-info"
