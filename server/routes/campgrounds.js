@@ -5,32 +5,37 @@ const Campground = require('../models/campground')
 const { isLoggedIn, isAuthor } = require('../middleware/auth')
 
 //this gets all the campgrounds 
-router.get('/',async(req,res)=>{
-    try{
+router.get('/', async (req, res) => {
+    try {
         const campgrounds = await Campground.find({}).populate('author')
         res.json(campgrounds)
     }
-    catch (error){
-        res.status(500).json({error: error.message })
+    catch (error) {
+        res.status(500).json({ error: error.message })
     }
 });
 
 //this get single campground (public)
-router.get('/:id', async(req,res)=>{
-    try{
-        const campground = await Campground.findById(req.params.id).populate('author')
-        if(!campground){
-            return res.status(404).json({error: 'Campground not found'})
+router.get('/:id', async (req, res) => {
+    try {
+        const campground = await Campground.findById(req.params.id).populate({
+            path: 'reviews',
+            populate: {
+                path: 'author'
+            }
+        }).populate('author');
+        if (!campground) {
+            return res.status(404).json({ error: 'Campground not found' })
         }
         res.json(campground)
     }
-    catch(error){
-        res.status(500).json({error: error.message})
+    catch (error) {
+        res.status(500).json({ error: error.message })
     }
 })
 
 // CREATE new campground (protected)
-router.post('/', isLoggedIn, async(req, res) => {
+router.post('/', isLoggedIn, async (req, res) => {
     try {
         console.log('Received data:', req.body); // For debugging
         const campground = new Campground(req.body);
@@ -44,7 +49,7 @@ router.post('/', isLoggedIn, async(req, res) => {
 });
 
 // UPDATE campground(protected + ownership)
-router.put('/:id', isLoggedIn, isAuthor , async(req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, async (req, res) => {
     try {
         const campground = await Campground.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!campground) {
@@ -57,7 +62,7 @@ router.put('/:id', isLoggedIn, isAuthor , async(req, res) => {
 });
 
 // DELETE campground
-router.delete('/:id',isLoggedIn,isAuthor, async(req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, async (req, res) => {
     try {
         const campground = await Campground.findByIdAndDelete(req.params.id);
         if (!campground) {

@@ -7,6 +7,7 @@ import Campgrounds from "./pages/Campground"
 import CampgroundDetails from './pages/CompgroundDetails';
 import CampgroundNew from './pages/CampgroundNew'
 import CampgroundEdit from './pages/CampgroundEdit';
+import ReviewEdit from './pages/ReviewEdit';
 import Login from './pages/Login';
 import Register from './pages/Register'
 import Footer from './components/Footer';
@@ -27,6 +28,7 @@ function App() {
             <Route path="/campgrounds/new"      element={<CampgroundNew />} />
             <Route path="/campgrounds/:id"      element={<CampgroundDetails />} />
             <Route path="/campgrounds/:id/edit" element={<CampgroundEdit />} />
+            <Route path="/campgrounds/:id/reviews/:reviewId/edit" element={<ReviewEdit />} />
             <Route path="/login"                element={<Login />} />
             <Route path="/register"             element={<Register />} />
 

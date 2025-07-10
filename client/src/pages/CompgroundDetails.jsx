@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Card, Button, Alert, Spinner, Modal } from 'react-bootstrap';
-import { campgroundsAPI } from '../services/api';
+import { Container, Card, Button, Alert, Spinner, Modal, Form, ListGroup } from 'react-bootstrap';
+import { campgroundsAPI, reviewsAPI } from '../services/api';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/AuthContext';
 
 function CampgroundDetails() {
     const { id } = useParams();
@@ -14,21 +14,26 @@ function CampgroundDetails() {
     const [error, setError] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [rating, setRating] = useState(1);
+    const [reviewText, setReviewText] = useState('');
+    const [reviewToDelete, setReviewToDelete] = useState(null);
+    const [showReviewDeleteModal, setShowReviewDeleteModal] = useState(false);
+
+
+    const fetchCampground = async () => {
+        try {
+            setLoading(true);
+            const response = await campgroundsAPI.getById(id);
+            setCampground(response.data);
+        } catch (err) {
+            setError('Failed to fetch campground details');
+            console.error('Error fetching campground:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchCampground = async () => {
-            try {
-                setLoading(true);
-                const response = await campgroundsAPI.getById(id);
-                setCampground(response.data);
-            } catch (err) {
-                setError('Failed to fetch campground details');
-                console.error('Error fetching campground:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchCampground();
     }, [id]);
 
@@ -46,9 +51,48 @@ function CampgroundDetails() {
         }
     };
 
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await reviewsAPI.create(id, { rating, body: reviewText });
+            setRating(1);
+            setReviewText('');
+            fetchCampground(); // Refresh campground data to show the new review
+        } catch (err) {
+            console.error('Error submitting review:', err);
+            setError('Failed to submit review');
+        }
+    };
+
+    const handleReviewDelete = async () => {
+        if (!reviewToDelete) return;
+        try {
+            await reviewsAPI.delete(id, reviewToDelete);
+            setShowReviewDeleteModal(false);
+            setReviewToDelete(null);
+            fetchCampground();
+        } catch (err) {
+            console.error('Error deleting review:', err);
+            setError('Failed to delete review');
+        }
+    };
+
+    const openReviewDeleteModal = (reviewId) => {
+        setReviewToDelete(reviewId);
+        setShowReviewDeleteModal(true);
+    };
+
+    const closeReviewDeleteModal = () => {
+        setShowReviewDeleteModal(false);
+        setReviewToDelete(null);
+    };
+
+
+    console.log('currentUser:', currentUser);
+    console.log('campground:', campground);
     const isAuthor = currentUser && campground && campground.author &&
         currentUser.id === campground.author._id;
-
+    console.log('isAuthor:', isAuthor);
 
     if (loading) {
         return (
@@ -106,27 +150,70 @@ function CampgroundDetails() {
                     </div>
                 </Card.Body>
             </Card>
-            <form action="" className="mt-4">
+
+            <div className="mt-4">
                 <h5>Leave a review</h5>
-                <div className='mb-3'>
-                    <label htmlFor="customRange1" className="form-label">Rating</label>
-                    <div className="w-25">
-                        <input type="range" min={1} max={5} className="form-range" id="customRange1" />
-                    </div>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="body" className="form-label">Review</label>
-                    <textarea
-                        name="review[body]"
-                        id="body"
-                        cols="30"
-                        rows="5"
-                        className="form-control"
-                        placeholder="Write your review here..."
-                    />
-                </div>
-                <button type="submit" className="btn btn-success">Submit</button>
-            </form>
+                <Form onSubmit={handleReviewSubmit}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Rating: {rating}⭐️</Form.Label>
+                        <Form.Control
+                            type="range"
+                            min={1}
+                            max={5}
+                            value={rating}
+                            onChange={(e) => setRating(e.target.value)}
+                            className="w-25"
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Review</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            placeholder="Write your review here..."
+                        />
+                    </Form.Group>
+                    <Button type="submit" variant="success">Submit</Button>
+                </Form>
+            </div>
+
+            <div className="mt-4">
+                <h5>Reviews</h5>
+                {campground.reviews && campground.reviews.length > 0 ? (
+                    <ListGroup>
+                        {campground.reviews.map((review) => (
+                            <ListGroup.Item key={review._id}>
+                                <p><strong>Rating:</strong> {review.rating}/5</p>
+                                <p>{review.body}</p>
+                                <p className="text-muted">By {review.author ? review.author.username : 'Anonymous'}</p>
+                                {currentUser && review.author && currentUser.id === review.author._id && (
+                                    <div className="d-flex gap-2 mt-2">
+                                        <Button
+                                            as={Link}
+                                            to={`/campgrounds/${id}/reviews/${review._id}/edit`}
+                                            variant="warning"
+                                            size="sm"
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            onClick={() => openReviewDeleteModal(review._id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
+                                )}
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                ) : (
+                    <p>No reviews yet.</p>
+                )}
+            </div>
 
             {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
@@ -146,6 +233,26 @@ function CampgroundDetails() {
                         disabled={deleting}
                     >
                         {deleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            {/* Review Delete Confirmation Modal */}
+            <Modal show={showReviewDeleteModal} onHide={closeReviewDeleteModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Review Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this review?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeReviewDeleteModal}>
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="danger"
+                        onClick={handleReviewDelete}
+                    >
+                        Delete
                     </Button>
                 </Modal.Footer>
             </Modal>

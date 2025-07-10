@@ -42,7 +42,7 @@ app.use(passport.session());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/campgrounds', campgroundRoutes);
-app.use('/api/campgrounds', reviewRoutes);
+app.use('/api/campgrounds/:id/reviews', reviewRoutes);
 // Root
 app.get('/', (req, res) => {
   res.json({ message: 'ChillCamp API is running!!!' });

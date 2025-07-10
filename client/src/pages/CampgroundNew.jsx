@@ -1,47 +1,48 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; //allows redirect after successful form submission
-import { Form, Button, Alert} from "react-bootstrap"
+import { Form, Button, Alert } from "react-bootstrap"
 import { campgroundsAPI } from "../services/api";
 
 
-function CampgroundNew(){
+function CampgroundNew() {
     const navigate = useNavigate()
-    const [campgroundData,setCampgroundData] = useState({
+    const [campgroundData, setCampgroundData] = useState({
         title: '',
         location: '',
         price: '',
-        description: ''
+        description: '',
+        image: ''
     })
-    const [error,setError]=useState(null)
-    const [loading,setLoading] = useState(false)
+    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(false)
 
-    const handleSubmit = async (e) =>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
-        try{
+        try {
             await campgroundsAPI.create(campgroundData);
             navigate('/campgrounds')
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             setError('Failed to create campground')
         }
-        finally{
+        finally {
             setLoading(false)
         }
     }
-    const handleChange=(e)=>{
+    const handleChange = (e) => {
         setCampgroundData({
             ...campgroundData,
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
         })
     }
-    return(
+    return (
         <div>
             <h2>Add New Campground</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
+                <Form.Group className="mb-3">
                     <Form.Label>Title</Form.Label>
                     <Form.Control
                         type="text"
@@ -81,6 +82,16 @@ function CampgroundNew(){
                         onChange={handleChange}
                         required
                     />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>Image URL</Form.Label>
+                    <Form.Control
+                        as="textarea"
+                        name="image"
+                        value={campgroundData.image}
+                        onChange={handleChange}
+                        required
+                        />
                 </Form.Group>
                 <Button type="submit" disabled={loading}>
                     {loading ? 'Creating...' : 'Create Campground'}

@@ -17,4 +17,9 @@ export const campgroundsAPI = {
     delete: (id) => api.delete(`/campgrounds/${id}`),
 };
 
-export default campgroundsAPI;
+export const reviewsAPI = {
+    create: (campgroundId, reviewData) => api.post(`/campgrounds/${campgroundId}/reviews`, reviewData),
+    update: (campgroundId, reviewId, reviewData) => api.put(`/campgrounds/${campgroundId}/reviews/${reviewId}`, reviewData),
+    delete: (campgroundId, reviewId) => api.delete(`/campgrounds/${campgroundId}/reviews/${reviewId}`),
+    getCampgroundReviews: (campgroundId) => api.get(`/campgrounds/${campgroundId}`),
+};
