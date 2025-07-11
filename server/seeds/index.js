@@ -39,24 +39,25 @@ const generateDescription = () => {
     return `${sample(intro)} ${sample(features)} ${sample(closing)}`
 }
 
+// Lorem Picsum with specific dimensions
 const staticImages = [
-    'https://cdn.pixabay.com/photo/2016/10/18/08/31/camping-1746321_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2016/11/21/16/03/camping-1845906_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2017/01/20/00/30/camping-1998254_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2020/03/07/17/24/tent-4908543_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2016/10/22/20/34/tent-1766144_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2016/01/09/18/27/camping-1134231_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2019/07/06/11/45/camping-4320723_960_720.jpg',
-    'https://cdn.pixabay.com/photo/2017/06/18/17/14/tent-2419218_960_720.jpg'
+    'https://picsum.photos/960/720?random=1',
+    'https://picsum.photos/960/720?random=2',
+    'https://picsum.photos/960/720?random=3',
+    'https://picsum.photos/960/720?random=4',
+    'https://picsum.photos/960/720?random=5',
+    'https://picsum.photos/960/720?random=6',
+    'https://picsum.photos/960/720?random=7',
+    'https://picsum.photos/960/720?random=8'
 ];
 
 
 const seedDB = async () => {
     await campground.deleteMany({})
     for (i = 0; i < 50; i++) {
-        const random1000 = Math.floor(Math.random() * 1000)
+        const randomIndex = Math.floor(Math.random() * cities.length)
         const camp = new Campground({
-            location: `${cities[random1000].city}, ${cities[random1000].state}`,
+            location: `${cities[randomIndex].city}, ${cities[randomIndex].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             price: Math.floor(Math.random() * 1000),
             image: sample(staticImages),
