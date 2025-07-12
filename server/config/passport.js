@@ -1,12 +1,35 @@
 const passport = require('passport');
-const passportLocal = require('passport-local');
+const LocalStrategy = require('passport-local').Strategy;
 const User = require('../models/user');
 
-//this tells passport to use local stratagies for authentication
-passport.use(new passportLocal(User.authenticate()));
+// Configure passport to use email instead of username
+passport.use(new LocalStrategy({
+    usernameField: 'email',  // This tells passport to use 'email' field instead of 'username'
+    passwordField: 'password'
+}, async (email, password, done) => {
+    try {
+        // Find user by email
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            return done(null, false, { message: 'No user found with that email' });
+        }
+        
+        // Use passport-local-mongoose's authenticate method
+        user.authenticate(password, (err, result) => {
+            if (err) {
+                return done(err);
+            }
+            if (!result) {
+                return done(null, false, { message: 'Incorrect password' });
+            }
+            return done(null, user);
+        });
+    } catch (error) {
+        return done(error);
+    }
+}));
 
-
-//this helps user not to login (ofcourse they have to login at least 1 time ) for every task that requires to be logged in
+// Serialize and deserialize user for session management
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 

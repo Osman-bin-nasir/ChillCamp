@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 function Login() {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
@@ -31,12 +31,13 @@ function Login() {
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                        <Form.Label>Username</Form.Label>
+                        <Form.Label>Email</Form.Label>
                         <Form.Control
-                            type="text"
-                            value={credentials.username}
-                            onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+                            type="email"
+                            value={credentials.email}
+                            onChange={(e) => setCredentials({...credentials, email: e.target.value})}
                             required
+                            placeholder="Enter your email"
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
@@ -46,6 +47,7 @@ function Login() {
                             value={credentials.password}
                             onChange={(e) => setCredentials({...credentials, password: e.target.value})}
                             required
+                            placeholder="Enter your password"
                         />
                     </Form.Group>
                     <Button disabled={loading} className="w-100" type="submit">

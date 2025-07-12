@@ -16,9 +16,12 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async () => {
         try {
+            console.log('Checking authentication...');
             const response = await axios.get('/api/auth/me');
+            console.log('Auth check response:', response.data);
             setCurrentUser(response.data.user);
         } catch (error) {
+            console.log('Auth check failed:', error.response?.status, error.response?.data);
             setCurrentUser(null);
         } finally {
             setLoading(false);
@@ -30,20 +33,38 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (credentials) => {
-        const response = await axios.post('/api/auth/login', credentials);
-        setCurrentUser(response.data.user);
-        return response.data;
+        try {
+            console.log('Attempting login with:', credentials.email);
+            const response = await axios.post('/api/auth/login', credentials);
+            console.log('Login response:', response.data);
+            setCurrentUser(response.data.user);
+            return response.data;
+        } catch (error) {
+            console.error('Login error:', error.response?.data);
+            throw error;
+        }
     };
 
     const register = async (userData) => {
-        const response = await axios.post('/api/auth/register', userData);
-        setCurrentUser(response.data.user);
-        return response.data;
+        try {
+            const response = await axios.post('/api/auth/register', userData);
+            setCurrentUser(response.data.user);
+            return response.data;
+        } catch (error) {
+            console.error('Register error:', error.response?.data);
+            throw error;
+        }
     };
 
     const logout = async () => {
-        await axios.post('/api/auth/logout');
-        setCurrentUser(null);
+        try {
+            await axios.post('/api/auth/logout');
+            setCurrentUser(null);
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Even if logout fails on server, clear local state
+            setCurrentUser(null);
+        }
     };
 
     const value = {
@@ -56,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };
