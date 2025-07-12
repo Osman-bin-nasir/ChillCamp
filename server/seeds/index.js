@@ -1,8 +1,7 @@
-const mongoose = require('mongoose')
-const Campground = require('../models/campground')
-const cities = require('./cities')
-const campground = require('../models/campground')
-const { descriptors, places } = require('./seedHelpers')
+import mongoose from 'mongoose';
+import Campground from '../models/campground.js';
+import cities from './cities.js';
+import { descriptors, places } from './seedHelpers.js';
 
 mongoose.connect('mongodb://localhost:27017/ChillCamp')
     .then(() => console.log("Connected to DB"))
@@ -28,12 +27,11 @@ const features = [
 
 const closing = [
     "Come unwind, explore, and make lasting memories under the stars.",
-    "Don’t miss this peaceful retreat—perfect for your next weekend getaway.",
+    "Don't miss this peaceful retreat—perfect for your next weekend getaway.",
     "Wake up to birdsong and fall asleep to the crackle of a cozy fire.",
     "Adventure, tranquility, and beauty all in one place—book now.",
     "Reconnect with nature and rediscover simple joys."
 ];
-
 
 const generateDescription = () => {
     return `${sample(intro)} ${sample(features)} ${sample(closing)}`
@@ -51,10 +49,9 @@ const staticImages = [
     'https://picsum.photos/960/720?random=8'
 ];
 
-
 const seedDB = async () => {
-    await campground.deleteMany({})
-    for (i = 0; i < 50; i++) {
+    await Campground.deleteMany({})
+    for (let i = 0; i < 50; i++) {
         const randomIndex = Math.floor(Math.random() * cities.length)
         const camp = new Campground({
             location: `${cities[randomIndex].city}, ${cities[randomIndex].state}`,
@@ -66,6 +63,7 @@ const seedDB = async () => {
         await camp.save();
     }
 }
+
 seedDB().then(() => {
     mongoose.connection.close();
 })
